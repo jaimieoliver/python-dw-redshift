@@ -10,8 +10,7 @@ import boto3
 import psycopg2
 from psycopg2 import sql
 
-from dd_events import dd_events
-from helpers import date_string_or_none, initialize_sentry
+from helpers import date_string_or_none
 
 def dump(read_replica, redshift, to_file, copy_to,  # pylint: disable=R0913
          query, params=None):
@@ -55,7 +54,6 @@ def dump(read_replica, redshift, to_file, copy_to,  # pylint: disable=R0913
 
 def main():
     """Copy all scheduled tables."""
-    initialize_sentry()
     logging.getLogger().setLevel(logging.INFO)
 
     read_replica = psycopg2.connect(os.environ.get("REPLICA_DATABASE_URL"))
@@ -117,8 +115,6 @@ def main():
     redshift.commit()
     logging.info("Done")
 
-    datadog_events = dd_events("Warehouse Tables")
-    dd_events.create(datadog_events)
 
 
 if __name__ == "__main__":
